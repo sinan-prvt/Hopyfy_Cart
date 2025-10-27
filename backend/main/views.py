@@ -22,8 +22,10 @@ from django.contrib.auth.models import User
 from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from rest_framework.permissions import AllowAny
-import razorpay
-
+import razorpay 
+from datetime import timedelta
+import random
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -78,45 +80,69 @@ class RegisterAPIView(generics.CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers
         )
-    
+
+otp_storage = {}
+
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         email = request.data.get("email")
         user = User.objects.filter(email=email).first()
+
         if user:
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            reset_link = f"http://localhost:5173/reset-password/{uid}/{token}/"
+            otp = random.randint(100000, 999999)
+            otp_storage[email] = {
+                "otp": str(otp),
+                "expires_at": timezone.now() + timedelta(minutes=5)
+            }
+
             send_mail(
-                "Reset Your Password",
-                f"Click the link to reset your password: {reset_link}",
+                "Your Password Reset OTP",
+                f"Your OTP for password reset is {otp}. It will expire in 5 minutes.",
                 "no-reply@example.com",
                 [email],
             )
-        return Response({"message": "If the email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
+
+        return Response(
+            {"message": "If this email exists, an OTP has been sent."},
+            status=status.HTTP_200_OK
+        )
+
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
-    
-    def post(self, request, uidb64, token):
-        try:
-            uid = urlsafe_base64_decode(uidb64).decode()
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return Response({"error": "Invalid UID"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if default_token_generator.check_token(user, token):
-            password = request.data.get("password")
-            if not password:
-                return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
-            
-            user.set_password(password)
-            user.save()
-            return Response({"success": "Password reset successful"}, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
-        
+    def post(self, request):
+        email = request.data.get("email")
+        otp = request.data.get("otp")
+        new_password = request.data.get("password")
+
+        if not (email and otp and new_password):
+            return Response({"error": "Email, OTP, and password are required"}, status=400)
+
+        otp_entry = otp_storage.get(email)
+        if not otp_entry:
+            return Response({"error": "OTP not found or expired"}, status=400)
+
+        if timezone.now() > otp_entry["expires_at"]:
+            del otp_storage[email]
+            return Response({"error": "OTP expired"}, status=400)
+
+        if otp_entry["otp"] != str(otp):
+            return Response({"error": "Invalid OTP"}, status=400)
+
+        user = User.objects.filter(email=email).first()
+        if not user:
+            return Response({"error": "User not found"}, status=400)
+
+        user.set_password(new_password)
+        user.save()
+
+        del otp_storage[email]
+
+        return Response({"success": "Password reset successful"}, status=200)
+    
 class EmailTokenObtainSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -344,8 +370,12 @@ client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_S
 @permission_classes([IsAuthenticated])
 def create_razorpay_order(request):
     user = request.user
-    amount = int(request.data.get('amount', 0))
-    amount_in_paise = amount * 100
+    cart_items = Cart.objects.filter(user=user)
+    if not cart_items.exists():
+        return Response({"detail": "Cart is empty"}, status=400)
+
+    amount = sum(item.product.price * item.quantity for item in cart_items)
+    amount_in_paise = int(amount * 100)
 
     razorpay_order = client.order.create({
         "amount": amount_in_paise,
@@ -357,9 +387,18 @@ def create_razorpay_order(request):
         user=user,
         total_amount=amount,
         payment_method="RAZORPAY",
-        status="Pending",
+        status="pending",
         razorpay_order_id=razorpay_order['id']
     )
+
+    # Create OrderItems from cart
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price
+        )
 
     return Response({
         "key": settings.RAZORPAY_KEY_ID,
@@ -402,36 +441,15 @@ def verify_razorpay_payment(request):
         order.status = "Paid"
         order.save()
 
-        items = data.get("items", [])
-        for item in items:
-            product_id = item.get("product")
-            if not product_id:
-                print(f"Skipping item with no product: {item}")
-                continue
-            try:
-                product = Product.objects.get(id=product_id)
-                OrderItem.objects.create(
-                    order=order,
-                    product=product,
-                    quantity=item.get("quantity", 1) or 1,
-                    price=item.get("price") or product.price
-                )
-            except Product.DoesNotExist:
-                print(f"Product not found for item: {item}")
-
-
+        # Clear the cart only after successful payment
         Cart.objects.filter(user=request.user).delete()
 
-        return Response({"success": True, "detail": "Payment verified and order items saved"})
+        return Response({"success": True, "detail": "Payment verified and order updated"})
 
     except SignatureVerificationError:
         order.status = "Failed"
         order.save()
         return Response({"success": False, "detail": "Payment verification failed"}, status=400)
-
-    except Exception as e:
-        print("Unexpected error in verify_razorpay_payment:", e)
-        return Response({"success": False, "detail": "Server error"}, status=500)
 
 
 @api_view(['POST'])

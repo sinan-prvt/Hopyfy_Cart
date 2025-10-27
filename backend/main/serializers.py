@@ -151,7 +151,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(source="orderitem_set", many=True, read_only=True)
+    items = OrderItemSerializer(many=True, read_only=True)
     user_username = serializers.CharField(source='user.username', read_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
     class Meta:

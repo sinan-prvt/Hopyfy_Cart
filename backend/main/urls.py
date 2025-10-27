@@ -35,8 +35,8 @@ urlpatterns = [
     path('checkout/', checkout, name='checkout'),
     path("auth/user/", current_user, name="current_user"),
     path('auth/token/', EmailTokenObtainView.as_view(), name='token_obtain'),
-    path('auth/password-reset/', PasswordResetRequestView.as_view(), name='password_reset'),
-    path('auth/password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path("auth/password-reset/", PasswordResetRequestView.as_view(), name="password_reset"),
+    path("auth/password-reset-confirm/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path('razorpay/order/', views.create_razorpay_order, name='create_razorpay_order'),
     path('razorpay/verify-payment/', views.verify_razorpay_payment, name='verify_payment'),
 
