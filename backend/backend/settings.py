@@ -1,13 +1,14 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
-SECRET_KEY = 'django-insecure-7i*j1l@t%+_6fo5@(v)64rv&%t$r57$a!4o24#8pk_v*p4_ci8'
+# SECRET_KEY = 'django-insecure-7i*j1l@t%+_6fo5@(v)64rv&%t$r57$a!4o24#8pk_v*p4_ci8'
 
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -60,17 +61,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG') == 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Hopyfy_Cart',
-        'USER': 'postgres',
-        'PASSWORD': '9400',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
-
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -84,7 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'djangcdo.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
