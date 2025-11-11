@@ -109,7 +109,6 @@ class PasswordResetRequestView(APIView):
             status=status.HTTP_200_OK
         )
 
-
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
@@ -441,7 +440,6 @@ def verify_razorpay_payment(request):
         order.status = "Paid"
         order.save()
 
-        # Clear the cart only after successful payment
         Cart.objects.filter(user=request.user).delete()
 
         return Response({"success": True, "detail": "Payment verified and order updated"})
