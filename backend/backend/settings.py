@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 
-# SECRET_KEY = 'django-insecure-7i*j1l@t%+_6fo5@(v)64rv&%t$r57$a!4o24#8pk_v*p4_ci8'
+SECRET_KEY = 'django-insecure-7i*j1l@t%+_6fo5@(v)64rv&%t$r57$a!4o24#8pk_v*p4_ci8'
 
 
 ALLOWED_HOSTS = []
@@ -88,7 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'djangcdo.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
