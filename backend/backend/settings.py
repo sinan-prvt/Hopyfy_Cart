@@ -102,11 +102,8 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-<<<<<<< HEAD
 STATIC_ROOT = BASE_DIR / 'static'
-=======
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
->>>>>>> 2c1ad04 (updated settings and env loading)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR / 'media')
