@@ -93,10 +93,12 @@ const Home = () => {
           price: p.price,
           originalPrice: p.original_price,
           discountPercentage: p.discount_percentage,
-          image: p.images?.[0]?.image?.startsWith("http")
-            ? p.images[0].image
-            : `http://13.204.186.114/api${p.images[0].image}`,
-          category: p.category?.name || "",
+          image:
+            p.images?.[0]?.image ||
+            p.images?.[0]?.image_url ||
+            p.images?.[0]?.images
+              ? `http://13.204.186.114${p.images[0].image || p.images[0].image_url || p.images[0].images}`
+              : "https://via.placeholder.com/300",
           isActive: p.is_active !== false,
           rating: p.reviews?.[0]?.rating || 4.5,
         }));

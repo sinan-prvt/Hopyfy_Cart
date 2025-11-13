@@ -249,8 +249,8 @@ const ProductDetails = () => {
               <img
                 src={
                   product.images[currentImageIndex].images
-                    ? `http://13.204.186.114${product.images[currentImageIndex].images}`
-                    : product.images[currentImageIndex].image_url
+                    ? `http://13.204.186.114${product.images?.[currentImageIndex]?.images || ""}`
+                    : product.images?.length > 0 ? product.images[currentImageIndex]?.images : ""
                 }
                 alt={product.name}
                 className="w-full h-[500px] object-contain bg-gray-50 p-8"

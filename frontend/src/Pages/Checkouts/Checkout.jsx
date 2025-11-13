@@ -93,7 +93,7 @@ const Checkout = () => {
 
             if (verify.data.success) {
               alert("Payment Successful!");
-              window.location.href = "/my-orders";
+              window.location.href = "/order-success";
             } else {
               alert("Payment verification failed!");
             }
