@@ -147,7 +147,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await api.post("auth/token/", { email, password });
+      const res = await api.post("auth/login/", { email, password });
       const { access, refresh, user: returnedUser } = res.data;
 
       setTokens({ access, refresh });
@@ -167,6 +167,7 @@ export const AuthProvider = ({ children }) => {
       return { success: false };
     }
   };
+
 
   const signup = async ({ username, email, password, confirmPassword }) => {
     try {

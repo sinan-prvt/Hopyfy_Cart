@@ -115,14 +115,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_CREDENTIALS = True
 
+
+CORS_ALLOW_ALL_ORIGINS = False
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com",
+    "http://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com/",
 ]
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com"
+    "http://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com/"
 ]
 
 CORS_ALLOW_HEADERS = [
