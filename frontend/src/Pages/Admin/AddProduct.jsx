@@ -76,8 +76,8 @@ const AddProduct = () => {
           .map((img) => {
             if (img.startsWith("http")) return img;
             if (img.startsWith("/media"))
-              return `http://127.0.0.1:8000${img}`;
-            return `http://127.0.0.1:8000/media/${img.replace(/^\/+/, "")}`;
+              return `http://13.204.186.114/api${img}`;
+            return `http://13.204.186.114/api/media/${img.replace(/^\/+/, "")}`;
           }),
       };
 

@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const AuthContext = createContext();
 
-const API_BASE = "http://127.0.0.1:8000/api/";
+const API_BASE = "http://13.204.186.114/api/";
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -70,7 +70,7 @@ api.interceptors.response.use(
 
     isRefreshing = true;
     try {
-      const res = await axios.post(`${API_BASE}auth/refresh/`, { refresh: refreshToken });
+      const res = await axios.post(`${API_BASE}token/refresh/`, { refresh: refreshToken });
       const newAccess = res.data.access;
       setTokens({ access: newAccess });
       api.defaults.headers.common.Authorization = `Bearer ${newAccess}`;
@@ -110,7 +110,7 @@ useEffect(() => {
     }
 
     try {
-      const resUser = await api.get("auth/user/");
+      const resUser = await api.get("user/");
       setUser(resUser.data);
     } catch (err) {
       console.error("User load failed", err);
@@ -136,7 +136,7 @@ useEffect(() => {
 
 const login = async (email, password) => {
   try {
-    const res = await api.post("auth/token/", { email, password });
+    const res = await api.post("token/", { email, password });
     const { access, refresh, user: returnedUser } = res.data;
 
     setTokens({ access, refresh });
@@ -159,7 +159,7 @@ const login = async (email, password) => {
 
 const signup = async ({ username, email, password, confirmPassword }) => {
   try {
-    const res = await api.post("auth/register/", {
+    const res = await api.post("register/", {
       username,
       email,
       password,

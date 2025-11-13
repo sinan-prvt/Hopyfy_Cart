@@ -85,7 +85,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/products/");
+        const res = await fetch("http://13.204.186.114/api/products/");
         const data = await res.json();
         const normalized = (data || []).map((p) => ({
           id: p.id,
@@ -93,7 +93,9 @@ const Home = () => {
           price: p.price,
           originalPrice: p.original_price,
           discountPercentage: p.discount_percentage,
-          image: p.images?.[0]?.image_url || "https://via.placeholder.com/300",
+          image: p.images?.[0]?.image?.startsWith("http")
+            ? p.images[0].image
+            : `http://13.204.186.114/api${p.images[0].image}`,
           category: p.category?.name || "",
           isActive: p.is_active !== false,
           rating: p.reviews?.[0]?.rating || 4.5,

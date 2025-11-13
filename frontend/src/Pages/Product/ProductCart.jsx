@@ -22,7 +22,7 @@ const ProductCart = ({ product, onShowToast, navigate }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/reviews/?product=${product.id}`);
+        const res = await fetch(`http://13.204.186.114/api/reviews/?product=${product.id}`);
         const data = await res.json();
         setReviews(Array.isArray(data) ? data : []);
 
