@@ -249,7 +249,7 @@ const ProductDetails = () => {
               <img
                 src={
                   product.images[currentImageIndex].images
-                    ? `http://192.168.1.100:8000${product.images[currentImageIndex].images}`
+                    ? `http://13.204.186.114${product.images[currentImageIndex].images}`
                     : product.images[currentImageIndex].image_url
                 }
                 alt={product.name}

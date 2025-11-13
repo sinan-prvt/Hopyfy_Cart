@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -48,7 +54,8 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (!error.response) return Promise.reject(error);
-    if (error.response.status !== 401 || originalRequest._retry) return Promise.reject(error);
+    if (error.response.status !== 401 || originalRequest._retry)
+      return Promise.reject(error);
     originalRequest._retry = true;
 
     const refreshToken = getRefresh();
@@ -70,7 +77,9 @@ api.interceptors.response.use(
 
     isRefreshing = true;
     try {
-      const res = await axios.post(`${API_BASE}token/refresh/`, { refresh: refreshToken });
+      const res = await axios.post(`${API_BASE}auth/token/refresh/`, {
+        refresh: refreshToken,
+      });
       const newAccess = res.data.access;
       setTokens({ access: newAccess });
       api.defaults.headers.common.Authorization = `Bearer ${newAccess}`;
@@ -101,96 +110,96 @@ export const AuthProvider = ({ children }) => {
     return true;
   };
 
-useEffect(() => {
-  const initUser = async () => {
-    const access = getAccess();
-    if (!access) {
+  useEffect(() => {
+    const initUser = async () => {
+      const access = getAccess();
+      if (!access) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const resUser = await api.get("auth/user/");
+        setUser(resUser.data);
+      } catch (err) {
+        console.error("User load failed", err);
+        clearTokens();
+        setUser(null);
+      }
       setLoading(false);
-      return;
-    }
+    };
 
+    initUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      (async () => {
+        const [cartData, wishlistData] = await Promise.all([
+          getCart(),
+          getWishlist(),
+        ]);
+        setCart(cartData);
+        setWishlist(wishlistData);
+      })();
+    }
+  }, [user]);
+
+  const login = async (email, password) => {
     try {
-      const resUser = await api.get("user/");
-      setUser(resUser.data);
-    } catch (err) {
-      console.error("User load failed", err);
-      clearTokens();
-      setUser(null);
-    }
-    setLoading(false);
-  };
+      const res = await api.post("auth/token/", { email, password });
+      const { access, refresh, user: returnedUser } = res.data;
 
-  initUser();
-}, []);
+      setTokens({ access, refresh });
+      api.defaults.headers.common.Authorization = `Bearer ${access}`;
+      setUser(returnedUser);
 
-useEffect(() => {
-  if (user) {
-    (async () => {
-      const [cartData, wishlistData] = await Promise.all([getCart(), getWishlist()]);
-      setCart(cartData);
-      setWishlist(wishlistData);
-    })();
-  }
-}, [user]);
-
-
-const login = async (email, password) => {
-  try {
-    const res = await api.post("token/", { email, password });
-    const { access, refresh, user: returnedUser } = res.data;
-
-    setTokens({ access, refresh });
-    api.defaults.headers.common.Authorization = `Bearer ${access}`;
-    setUser(returnedUser);
-
-    await Promise.all([getCart(), getWishlist()]);
-    toast.success(`Welcome back, ${returnedUser?.username || "User"}!`);
-    return { success: true, user: returnedUser };
-  } catch (error) {
-    console.error("Login error:", error.response?.data || error.message);
-    if (error.response?.status === 401) {
-      toast.error("Invalid credentials or email not verified");
-    } else {
-      toast.error("Login failed. Try again later");
-    }
-    return { success: false };
-  }
-};
-
-const signup = async ({ username, email, password, confirmPassword }) => {
-  try {
-    const res = await api.post("register/", {
-      username,
-      email,
-      password,
-      password2: confirmPassword,
-    });
-
-    toast.success("Signup successful! Logging you in...");
-    console.log("Signup response:", res.data);
-
-    const loginRes = await login(email, password);
-    if (loginRes.success) {
-      return { success: true, user: loginRes.user };
-    } else {
-      toast.warn("Account created, please login manually");
+      await Promise.all([getCart(), getWishlist()]);
+      toast.success(`Welcome back, ${returnedUser?.username || "User"}!`);
+      return { success: true, user: returnedUser };
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+      if (error.response?.status === 401) {
+        toast.error("Invalid credentials or email not verified");
+      } else {
+        toast.error("Login failed. Try again later");
+      }
       return { success: false };
     }
-  } catch (err) {
-    console.error("Signup backend error:", err.response?.data);
-    const errors = err.response?.data;
-    if (errors) {
-      Object.entries(errors).forEach(([field, msgs]) => {
-        msgs.forEach((msg) => toast.error(`${field}: ${msg}`));
+  };
+
+  const signup = async ({ username, email, password, confirmPassword }) => {
+    try {
+      const res = await api.post("auth/register/", {
+        username,
+        email,
+        password,
+        password2: confirmPassword,
       });
-    } else {
-      toast.error("Signup failed");
+
+      toast.success("Signup successful! Logging you in...");
+      console.log("Signup response:", res.data);
+
+      const loginRes = await login(email, password);
+      if (loginRes.success) {
+        return { success: true, user: loginRes.user };
+      } else {
+        toast.warn("Account created, please login manually");
+        return { success: false };
+      }
+    } catch (err) {
+      console.error("Signup backend error:", err.response?.data);
+      const errors = err.response?.data;
+      if (errors) {
+        Object.entries(errors).forEach(([field, msgs]) => {
+          msgs.forEach((msg) => toast.error(`${field}: ${msg}`));
+        });
+      } else {
+        toast.error("Signup failed");
+      }
+      return { success: false };
     }
-    return { success: false };
-  }
-};
-
-
+  };
 
   const logout = () => {
     clearTokens();
@@ -219,7 +228,9 @@ const signup = async ({ username, email, password, confirmPassword }) => {
       setCart((prev) => {
         const exists = prev.find((c) => c.product.id === res.data.product.id);
         return exists
-          ? prev.map((c) => (c.product.id === res.data.product.id ? res.data : c))
+          ? prev.map((c) =>
+              c.product.id === res.data.product.id ? res.data : c
+            )
           : [...prev, res.data];
       });
       toast.success("Added to cart");
@@ -233,7 +244,9 @@ const signup = async ({ username, email, password, confirmPassword }) => {
   const updateQuantity = async (cartItemId, newQuantity) => {
     if (!requireLogin()) return { success: false };
     try {
-      const res = await api.patch(`cart/${cartItemId}/`, { quantity: newQuantity });
+      const res = await api.patch(`cart/${cartItemId}/`, {
+        quantity: newQuantity,
+      });
       setCart((prev) => prev.map((c) => (c.id === cartItemId ? res.data : c)));
       toast.info("Cart updated");
       return { success: true };
@@ -268,40 +281,43 @@ const signup = async ({ username, email, password, confirmPassword }) => {
     }
   };
 
-const addToWishlist = async (productId) => {
-  try {
-    const res = await api.post("wishlist/", { product_id: productId });
-    setWishlist([...wishlist, res.data]);
-    toast.success("Added to wishlist!");
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to add wishlist!");
-  }
-};
+  const addToWishlist = async (productId) => {
+    try {
+      const res = await api.post("wishlist/", { product_id: productId });
+      setWishlist([...wishlist, res.data]);
+      toast.success("Added to wishlist!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add wishlist!");
+    }
+  };
 
-const removeFromWishlist = async (wishlistId) => {
-  try {
-    await api.delete(`wishlist/${wishlistId}/`);
-    setWishlist((prev) => prev.filter((item) => item.id !== wishlistId));
-    toast.success("Removed from wishlist");
-  } catch (error) {
-    console.error("Failed to remove from wishlist:", error);
-    toast.error("Failed to remove item from wishlist");
-  }
-};
-
+  const removeFromWishlist = async (wishlistId) => {
+    try {
+      await api.delete(`wishlist/${wishlistId}/`);
+      setWishlist((prev) => prev.filter((item) => item.id !== wishlistId));
+      toast.success("Removed from wishlist");
+    } catch (error) {
+      console.error("Failed to remove from wishlist:", error);
+      toast.error("Failed to remove item from wishlist");
+    }
+  };
 
   const moveToCart = async (productId, quantity = 1) => {
     if (!requireLogin()) return { success: false };
     try {
-      const res = await api.post("wishlist/move_to_cart/", { product_id: productId, quantity });
-
+      const res = await api.post("wishlist/move_to_cart/", {
+        product_id: productId,
+        quantity,
+      });
 
       setWishlist((prev) => prev.filter((w) => w.product.id !== productId));
       setCart((prev) => {
         const exists = prev.find((c) => c.product.id === res.data.product.id);
         return exists
-          ? prev.map((c) => (c.product.id === res.data.product.id ? res.data : c))
+          ? prev.map((c) =>
+              c.product.id === res.data.product.id ? res.data : c
+            )
           : [...prev, res.data];
       });
 
@@ -350,7 +366,9 @@ const removeFromWishlist = async (wishlistId) => {
     [user, loading, cart, wishlist]
   );
 
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);
