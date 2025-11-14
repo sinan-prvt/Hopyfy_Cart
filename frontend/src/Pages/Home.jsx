@@ -196,7 +196,7 @@ const Home = () => {
         <div className="relative z-20 h-full flex flex-col justify-center items-center text-center px-4">
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 leading-tight text-white drop-shadow-lg font-serif">
-              Hello Your <span className="text-blue-400">Style</span>
+              Elevate Your <span className="text-blue-400">Style</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto font-light tracking-wide drop-shadow-md">
               Premium footwear crafted for elegance and comfort in every step
