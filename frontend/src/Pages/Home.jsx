@@ -87,21 +87,27 @@ const Home = () => {
       try {
         const res = await fetch("http://13.204.186.114/api/products/");
         const data = await res.json();
-        const normalized = (data || []).map((p) => ({
+        
+        const normalized = (data || []).map((p) => {
+        let image = "";
+
+        if (p.images?.length > 0) {
+          const img = p.images[0];
+          image = img.image || img.image_url || "";
+        }
+
+        return {
           id: p.id,
           name: p.name,
           price: p.price,
           originalPrice: p.original_price,
           discountPercentage: p.discount_percentage,
-          image:
-            p.images?.[0]?.image ||
-            p.images?.[0]?.image_url ||
-            p.images?.[0]?.images
-              ? `http://13.204.186.114${p.images[0].image || p.images[0].image_url || p.images[0].images}`
-              : "https://via.placeholder.com/300",
+          image: image || "https://via.placeholder.com/300",
+
           isActive: p.is_active !== false,
           rating: p.reviews?.[0]?.rating || 4.5,
-        }));
+        };
+      });
         const filtered = normalized.filter((p) => p.isActive !== false);
         setProducts(filtered.slice(0, 8));
       } catch (error) {
@@ -196,7 +202,7 @@ const Home = () => {
         <div className="relative z-20 h-full flex flex-col justify-center items-center text-center px-4">
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 leading-tight text-white drop-shadow-lg font-serif">
-              Hello Your <span className="text-blue-400">Style</span>
+              Elevate Your <span className="text-blue-400">Style</span>
             </h1>
             <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto font-light tracking-wide drop-shadow-md">
               Premium footwear crafted for elegance and comfort in every step

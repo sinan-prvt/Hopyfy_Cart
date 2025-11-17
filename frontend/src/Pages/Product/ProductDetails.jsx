@@ -248,9 +248,9 @@ const ProductDetails = () => {
             <div className="relative group">
               <img
                 src={
-                  product.images[currentImageIndex].images
-                    ? `http://13.204.186.114${product.images?.[currentImageIndex]?.images || ""}`
-                    : product.images?.length > 0 ? product.images[currentImageIndex]?.images : ""
+                  product.images?.[currentImageIndex]?.image_url?.startsWith("http")
+                    ? product.images[currentImageIndex].image_url
+                    : `http://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com${product.images[currentImageIndex].image_url}`
                 }
                 alt={product.name}
                 className="w-full h-[500px] object-contain bg-gray-50 p-8"

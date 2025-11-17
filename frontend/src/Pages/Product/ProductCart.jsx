@@ -62,7 +62,6 @@ const ProductCart = ({ product, onShowToast, navigate }) => {
     }
   };
 
-  // Toggle wishlist
   const handleWishlistToggle = async () => {
     if (!user) {
       onShowToast("Please login to add products to wishlist", "error");
@@ -101,7 +100,6 @@ const ProductCart = ({ product, onShowToast, navigate }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      {/* Wishlist Button */}
       <button
         onClick={handleWishlistToggle}
         className="absolute top-3 right-3 z-10 bg-white rounded-full p-2 shadow-md hover:bg-red-50 transition-colors"
@@ -113,7 +111,6 @@ const ProductCart = ({ product, onShowToast, navigate }) => {
         />
       </button>
 
-      {/* Product Image */}
       <Link to={`/product/${product.id}`} className="flex-grow relative block">
         {imageUrl ? (
           <motion.img
@@ -144,7 +141,6 @@ const ProductCart = ({ product, onShowToast, navigate }) => {
         )}
       </Link>
 
-      {/* Product Info */}
       <div className="p-4 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-2">
           <div className="w-4/5">
