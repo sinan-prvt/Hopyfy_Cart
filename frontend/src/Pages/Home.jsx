@@ -85,29 +85,29 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://13.204.186.114/api/products/");
+        const res = await fetch(`${import.meta.env.VITE_API_BASE || "http://13.234.18.150:8000/api/"}products/`);
         const data = await res.json();
-        
+
         const normalized = (data || []).map((p) => {
-        let image = "";
+          let image = "";
 
-        if (p.images?.length > 0) {
-          const img = p.images[0];
-          image = img.image || img.image_url || "";
-        }
+          if (p.images?.length > 0) {
+            const img = p.images[0];
+            image = img.image || img.image_url || "";
+          }
 
-        return {
-          id: p.id,
-          name: p.name,
-          price: p.price,
-          originalPrice: p.original_price,
-          discountPercentage: p.discount_percentage,
-          image: image || "https://via.placeholder.com/300",
+          return {
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            originalPrice: p.original_price,
+            discountPercentage: p.discount_percentage,
+            image: image || "https://via.placeholder.com/300",
 
-          isActive: p.is_active !== false,
-          rating: p.reviews?.[0]?.rating || 4.5,
-        };
-      });
+            isActive: p.is_active !== false,
+            rating: p.reviews?.[0]?.rating || 4.5,
+          };
+        });
         const filtered = normalized.filter((p) => p.isActive !== false);
         setProducts(filtered.slice(0, 8));
       } catch (error) {
@@ -255,7 +255,7 @@ const Home = () => {
               to="/product"
               className="group text-blue-600 hover:text-blue-700 flex items-center gap-2 font-semibold transition-all bg-blue-50 hover:bg-blue-100 px-5 py-2.5 rounded-xl"
             >
-              View All 
+              View All
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
@@ -303,11 +303,10 @@ const Home = () => {
                     className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-300"
                   >
                     <Heart
-                      className={`w-5 h-5 ${
-                        wishlist.find((w) => w.product.id === product.id)
+                      className={`w-5 h-5 ${wishlist.find((w) => w.product.id === product.id)
                           ? "fill-red-500 text-red-500"
                           : "text-gray-600"
-                      }`}
+                        }`}
                     />
                   </button>
 
@@ -340,11 +339,10 @@ const Home = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.floor(product.rating)
+                            className={`w-4 h-4 ${i < Math.floor(product.rating)
                                 ? "fill-yellow-400 text-yellow-400"
                                 : "text-gray-300"
-                            }`}
+                              }`}
                           />
                         ))}
                       </div>
@@ -368,11 +366,10 @@ const Home = () => {
                     <button
                       onClick={() => handleAddToCart(product)}
                       disabled={addingToCart[product.id]}
-                      className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold shadow-md transition-all duration-300 ${
-                        addingToCart[product.id]
+                      className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold shadow-md transition-all duration-300 ${addingToCart[product.id]
                           ? "bg-green-500 text-white cursor-not-allowed"
                           : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95"
-                      }`}
+                        }`}
                     >
                       {addingToCart[product.id] ? (
                         <>
@@ -481,11 +478,10 @@ const Home = () => {
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`w-5 h-5 ${
-                      i < testimonial.rating
+                    className={`w-5 h-5 ${i < testimonial.rating
                         ? "fill-yellow-400 text-yellow-400"
                         : "text-gray-300"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>

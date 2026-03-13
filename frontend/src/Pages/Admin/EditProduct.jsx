@@ -26,17 +26,15 @@ const EditProduct = () => {
         const normalizedImages =
           p.images && p.images.length
             ? p.images.map((img) => {
-                if (typeof img === "string") {
-                  if (img.startsWith("http")) return img;
-                  if (img.startsWith("/media"))
-                    return `http://13.204.186.114/api${img}`;
-                  return `http://13.204.186.114/api/media/${img.replace(
-                    /^\/+/,
-                    ""
-                  )}`;
+              if (typeof img === "string") {
+                if (img.startsWith("http")) return img;
+                if (img.startsWith("/media")) {
+                  return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api${img}`;
                 }
-                return "";
-              })
+                return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api/media/${img.replace(/^\/+/, "")}`;
+              }
+              return "";
+            })
             : [""];
 
         setInitialValues({
@@ -101,9 +99,10 @@ const EditProduct = () => {
           .filter((img) => img)
           .map((img) => {
             if (img.startsWith("http")) return img;
-            if (img.startsWith("/media"))
-              return `http://13.204.186.114/api${img}`;
-            return `http://13.204.186.114/api/media/${img.replace(/^\/+/, "")}`;
+            if (img.startsWith("/media")) {
+              return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api${img}`;
+            }
+            return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api/media/${img.replace(/^\/+/, "")}`;
           }),
       };
 

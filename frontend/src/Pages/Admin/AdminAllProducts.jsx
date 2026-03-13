@@ -19,12 +19,12 @@ const AdminAllProducts = () => {
 
     if (typeof img === "string") {
       if (img.startsWith("http")) return img;
-      if (img.startsWith("/media")) return `http://13.204.186.114/api${img}`;
-      return `http://13.204.186.114/api/media/${img.replace(/^\/+/, "")}`;
+      if (img.startsWith("/media")) return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api${img}`;
+      return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api/media/${img.replace(/^\/+/, "")}`;
     }
 
     if (typeof img === "object") {
-      if (img.image) return img.image.startsWith("http") ? img.image : `http://13.204.186.114/api${img.image}`;
+      if (img.image) return img.image.startsWith("http") ? img.image : `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api${img.image}`;
       if (img.image_url) return img.image_url;
     }
 
@@ -280,9 +280,8 @@ const AdminAllProducts = () => {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => toggleStatus(p.id, p.isActive)}
-                        className={`relative inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                          p.isActive ? "bg-green-100 text-green-800 hover:bg-green-200" : "bg-red-100 text-red-800 hover:bg-red-200"
-                        }`}
+                        className={`relative inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${p.isActive ? "bg-green-100 text-green-800 hover:bg-green-200" : "bg-red-100 text-red-800 hover:bg-red-200"
+                          }`}
                       >
                         {p.isActive ? "Active" : "Inactive"}
                       </button>

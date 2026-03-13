@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const AuthContext = createContext();
 
-const API_BASE = "http://13.204.186.114/api/";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://13.234.18.150:8000/api/";
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -230,8 +230,8 @@ export const AuthProvider = ({ children }) => {
         const exists = prev.find((c) => c.product.id === res.data.product.id);
         return exists
           ? prev.map((c) =>
-              c.product.id === res.data.product.id ? res.data : c
-            )
+            c.product.id === res.data.product.id ? res.data : c
+          )
           : [...prev, res.data];
       });
       toast.success("Added to cart");
@@ -317,8 +317,8 @@ export const AuthProvider = ({ children }) => {
         const exists = prev.find((c) => c.product.id === res.data.product.id);
         return exists
           ? prev.map((c) =>
-              c.product.id === res.data.product.id ? res.data : c
-            )
+            c.product.id === res.data.product.id ? res.data : c
+          )
           : [...prev, res.data];
       });
 

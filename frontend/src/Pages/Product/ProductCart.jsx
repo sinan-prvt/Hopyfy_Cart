@@ -22,7 +22,7 @@ const ProductCart = ({ product, onShowToast, navigate }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`http://13.204.186.114/api/reviews/?product=${product.id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_BASE || "http://13.234.18.150:8000/api/"}reviews/?product=${product.id}`);
         const data = await res.json();
         setReviews(Array.isArray(data) ? data : []);
 
@@ -176,11 +176,10 @@ const ProductCart = ({ product, onShowToast, navigate }) => {
               whileTap={{ scale: 0.95 }}
               onClick={handleAddToCart}
               disabled={product.stock === 0}
-              className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs ${
-                product.stock === 0
+              className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs ${product.stock === 0
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}
+                }`}
             >
               <ShoppingCart size={14} />
               <span>Add</span>

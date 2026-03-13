@@ -75,9 +75,10 @@ const AddProduct = () => {
           .filter((img) => img)
           .map((img) => {
             if (img.startsWith("http")) return img;
-            if (img.startsWith("/media"))
-              return `http://13.204.186.114/api${img}`;
-            return `http://13.204.186.114/api/media/${img.replace(/^\/+/, "")}`;
+            if (img.startsWith("/media")) {
+              return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api${img}`;
+            }
+            return `${import.meta.env.VITE_API_BASE?.replace(/\/api\/$/, '') || "http://13.234.18.150:8000"}/api/media/${img.replace(/^\/+/, "")}`;
           }),
       };
 
@@ -307,8 +308,8 @@ const AddProduct = () => {
                               alt="preview"
                               className="w-14 h-14 object-cover rounded border"
                               onError={(e) =>
-                                (e.target.src =
-                                  "https://via.placeholder.com/80?text=No+Image")
+                              (e.target.src =
+                                "https://via.placeholder.com/80?text=No+Image")
                               }
                             />
                           )}
