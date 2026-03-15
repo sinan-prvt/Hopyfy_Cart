@@ -61,20 +61,38 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-key')
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.getenv('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': os.getenv('DB_USER', ''),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', ''),
+        'CONN_MAX_AGE': int(os.getenv('DB_CONN_MAX_AGE', 600)),
+        'ATOMIC_REQUESTS': False,
+        'OPTIONS': {
+            'connect_timeout': 10,
+            'options': '-c statement_timeout=30000',
+        } if 'postgresql' in os.getenv('DB_ENGINE', '') else {},
     }
 }
+
+# Database Connection Pooling (for PostgreSQL RDS)
+if 'postgresql' in os.getenv('DB_ENGINE', ''):
+    DATABASES['default']['ENGINE'] = 'dj_db_pool.base'
+    DATABASES['default']['ORIGINAL_ENGINE'] = 'django.db.backends.postgresql'
+    DATABASES['default']['POOL'] = {
+        'min_size': int(os.getenv('DB_POOL_MIN_SIZE', 5)),
+        'max_size': int(os.getenv('DB_POOL_MAX_SIZE', 20)),
+        'max_overflow': int(os.getenv('DB_POOL_MAX_OVERFLOW', 10)),
+        'timeout': int(os.getenv('DB_POOL_TIMEOUT', 30)),
+        'recycle': int(os.getenv('DB_POOL_RECYCLE', 3600)),
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -120,12 +138,12 @@ CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com/",
+    "http://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com",
 ]
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com/"
+    "http://hopyfy-cart-frontend.s3-website.ap-south-1.amazonaws.com"
 ]
 
 CORS_ALLOW_HEADERS = [
