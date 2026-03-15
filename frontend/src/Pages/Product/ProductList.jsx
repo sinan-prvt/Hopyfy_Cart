@@ -102,8 +102,31 @@ function ProductList() {
     fetchProducts();
   }, []);
 
-  if (!products.length)
-    return <p className="text-center py-20 text-gray-500">Loading products...</p>;
+  if (!products.length) {
+    return (
+      <div className="px-4 py-8 max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <div className="h-10 w-64 bg-gray-200 animate-pulse rounded-md mx-auto mb-2"></div>
+          <div className="h-4 w-48 bg-gray-200 animate-pulse rounded-md mx-auto"></div>
+        </div>
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8 h-32 animate-pulse">
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="h-48 bg-gray-200 animate-pulse"></div>
+              <div className="p-4 space-y-3">
+                <div className="h-4 w-1/3 bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-5 w-3/4 bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-4 w-1/4 bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-10 w-full bg-gray-200 animate-pulse rounded mt-4"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
@@ -143,11 +166,10 @@ function ProductList() {
                   {categories.map((category) => (
                     <button
                       key={category}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                        selectedCategory === category
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedCategory === category
                           ? "bg-blue-600 text-white"
                           : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                      }`}
+                        }`}
                       onClick={() => setSelectedCategory(category)}
                     >
                       {category}

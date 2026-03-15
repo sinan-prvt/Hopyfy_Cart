@@ -265,14 +265,20 @@ const Home = () => {
               {[...Array(4)].map((_, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 animate-pulse"
+                  className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100"
                 >
-                  <div className="h-72 bg-gray-200"></div>
+                  <div className="h-72 bg-gray-200 animate-pulse"></div>
                   <div className="p-6 space-y-4">
-                    <div className="h-5 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    <div className="h-5 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-12 bg-gray-200 rounded-xl"></div>
+                    <div className="h-5 bg-gray-200 animate-pulse rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 animate-pulse rounded w-1/4"></div>
+                    <div className="flex gap-2 mb-3">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-1/3"></div>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="h-6 bg-gray-200 animate-pulse rounded w-1/3"></div>
+                      <div className="h-6 bg-gray-200 animate-pulse rounded w-1/4"></div>
+                    </div>
+                    <div className="h-12 w-full bg-gray-200 animate-pulse rounded-xl mt-4"></div>
                   </div>
                 </div>
               ))}
@@ -304,8 +310,8 @@ const Home = () => {
                   >
                     <Heart
                       className={`w-5 h-5 ${wishlist.find((w) => w.product.id === product.id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-600"
+                        ? "fill-red-500 text-red-500"
+                        : "text-gray-600"
                         }`}
                     />
                   </button>
@@ -340,8 +346,8 @@ const Home = () => {
                           <Star
                             key={i}
                             className={`w-4 h-4 ${i < Math.floor(product.rating)
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300"
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
                               }`}
                           />
                         ))}
@@ -367,8 +373,8 @@ const Home = () => {
                       onClick={() => handleAddToCart(product)}
                       disabled={addingToCart[product.id]}
                       className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold shadow-md transition-all duration-300 ${addingToCart[product.id]
-                          ? "bg-green-500 text-white cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95"
+                        ? "bg-green-500 text-white cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95"
                         }`}
                     >
                       {addingToCart[product.id] ? (
@@ -479,8 +485,8 @@ const Home = () => {
                   <Star
                     key={i}
                     className={`w-5 h-5 ${i < testimonial.rating
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "text-gray-300"
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-gray-300"
                       }`}
                   />
                 ))}
