@@ -86,35 +86,103 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE || "http://13.234.18.150:8000/api/"}products/`);
-        const data = await res.json();
+        const mockProducts = [
+          {
+            id: 1,
+            name: "Nike Air Max 270 React",
+            price: 12999,
+            originalPrice: 15999,
+            discountPercentage: 19,
+            image: "/Images/mock_shoe_1.png",
+            category: "Running",
+            isActive: true,
+            rating: 4.8,
+          },
+          {
+            id: 2,
+            name: "Nike Air Force 1 Premium",
+            price: 8999,
+            originalPrice: 10999,
+            discountPercentage: 18,
+            image: "/Images/mock_shoe_2.png",
+            category: "Lifestyle",
+            isActive: true,
+            rating: 4.9,
+          },
+          {
+            id: 3,
+            name: "Nike Dunk High Retro",
+            price: 15499,
+            originalPrice: 16999,
+            discountPercentage: 8,
+            image: "/Images/mock_shoe_3.png",
+            category: "Streetwear",
+            isActive: true,
+            rating: 4.9,
+          },
+          {
+            id: 4,
+            name: "Nike Air Jordan 1 Low",
+            price: 9999,
+            originalPrice: null,
+            discountPercentage: 0,
+            image: "/Images/mock_shoe_4.png",
+            category: "Basketball",
+            isActive: true,
+            rating: 4.7,
+          },
+          {
+            id: 5,
+            name: "Nike Air Max 97",
+            price: 16999,
+            originalPrice: 18999,
+            discountPercentage: 10,
+            image: "/Images/mock_shoe_5.png",
+            category: "Lifestyle",
+            isActive: true,
+            rating: 4.6,
+          },
+          {
+            id: 6,
+            name: "Adidas Ultraboost 22",
+            price: 15999,
+            originalPrice: 17999,
+            discountPercentage: 11,
+            image: "/Images/mock_shoe_6.png",
+            category: "Running",
+            isActive: true,
+            rating: 4.7,
+          },
+          {
+            id: 7,
+            name: "Puma RS-X Clean",
+            price: 7999,
+            originalPrice: 9999,
+            discountPercentage: 20,
+            image: "/Images/mock_shoe_7.png",
+            category: "Casual",
+            isActive: true,
+            rating: 4.5,
+          },
+          {
+            id: 8,
+            name: "Vans Old Skool Classic",
+            price: 4999,
+            originalPrice: null,
+            discountPercentage: 0,
+            image: "/Images/mock_shoe_8.png",
+            category: "Skate",
+            isActive: true,
+            rating: 4.8,
+          },
+        ];
 
-        const normalized = (data || []).map((p) => {
-          let image = "";
-
-          if (p.images?.length > 0) {
-            const img = p.images[0];
-            image = img.image || img.image_url || "";
-          }
-
-          return {
-            id: p.id,
-            name: p.name,
-            price: p.price,
-            originalPrice: p.original_price,
-            discountPercentage: p.discount_percentage,
-            image: image || "https://via.placeholder.com/300",
-            category: p.category?.name,
-            isActive: p.is_active !== false,
-            rating: p.reviews?.[0]?.rating || 4.5,
-          };
-        });
-        const filtered = normalized.filter((p) => p.isActive !== false);
-        setProducts(filtered.slice(0, 8));
+        setProducts(mockProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
-        setLoading(false);
+        // Simulate a noticeable network delay for skeleton loading reveal
+        setTimeout(() => setLoading(false), 2000);
       }
     };
 
@@ -279,7 +347,6 @@ const Home = () => {
                       <div className="h-6 bg-gray-200 animate-pulse rounded w-1/3"></div>
                       <div className="h-6 bg-gray-200 animate-pulse rounded w-1/4"></div>
                     </div>
-                    <div className="h-12 w-full bg-gray-200 animate-pulse rounded-xl mt-4"></div>
                   </div>
                 </div>
               ))}
@@ -305,36 +372,29 @@ const Home = () => {
                     </div>
                   )}
 
-                  <button
-                    onClick={() => handleAddToWishlist(product)}
-                    className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-300"
+                  <div
+                    onClick={() => navigate("/product")}
+                    className="block relative overflow-hidden cursor-pointer"
                   >
-                    <Heart
-                      className={`w-5 h-5 ${
-                        wishlist.find((w) => w.product.id === product.id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-600"
-                      }`}
-                    />
-                  </button>
-
-                  <Link to={`/product/${product.id}`} className="block relative overflow-hidden">
-                    <div className="h-72 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-6">
+                    <div className="h-72 bg-gray-50 flex items-center justify-center p-6 mix-blend-multiply">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-contain transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-2"
+                        className="w-full h-full object-contain transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-2 mix-blend-multiply drop-shadow-lg"
                       />
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </Link>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  </div>
 
-                  <div className="p-6">
-                    <Link to={`/product/${product.id}`}>
+                  <div
+                    onClick={() => navigate("/product")}
+                    className="p-6 cursor-pointer"
+                  >
+                    <div className="block">
                       <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3.5rem]">
                         {product.name}
                       </h3>
-                    </Link>
+                    </div>
 
                     {product.category && (
                       <span className="inline-block text-xs font-medium text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full mb-3">
@@ -371,28 +431,6 @@ const Home = () => {
                         </span>
                       )}
                     </div>
-
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      disabled={addingToCart[product.id]}
-                      className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold shadow-md transition-all duration-300 ${
-                        addingToCart[product.id]
-                          ? "bg-green-500 text-white cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95"
-                      }`}
-                    >
-                      {addingToCart[product.id] ? (
-                        <>
-                          <CheckCircle className="w-5 h-5" />
-                          Added!
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="w-5 h-5" />
-                          Add to Cart
-                        </>
-                      )}
-                    </button>
                   </div>
                 </div>
               ))}
