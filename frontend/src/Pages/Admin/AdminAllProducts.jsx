@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const AdminAllProducts = () => {
   const [products, setProducts] = useState([]);
@@ -166,8 +165,6 @@ const AdminAllProducts = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
-
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">

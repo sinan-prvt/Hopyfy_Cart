@@ -7,7 +7,6 @@ import {
   ChevronRight,
   ArrowRight,
   Star,
-  Heart,
   ShoppingCart,
   Truck,
   Shield,
@@ -19,7 +18,7 @@ import { toast } from "react-toastify";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user, addToCart, wishlist, addToWishlist } = useAuth();
+  const { user, addToCart } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
@@ -60,22 +59,6 @@ const Home = () => {
     }
   };
 
-  const handleAddToWishlist = async (product) => {
-    if (!user) {
-      toast.info("Please login to add products to your wishlist!");
-      navigate("/login");
-      return;
-    }
-
-    const exists = wishlist.find((w) => w.product.id === product.id);
-    if (exists) {
-      toast.info("Already in wishlist!");
-      return;
-    }
-
-    await addToWishlist(product.id);
-  };
-
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (email) {
@@ -86,14 +69,16 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const mockProducts = [
+        // Use curated reference products (internet images) instead of backend data.
+        const referenceProducts = [
           {
             id: 1,
             name: "Nike Air Max 270 React",
             price: 12999,
             originalPrice: 15999,
             discountPercentage: 19,
-            image: "/Images/mock_shoe_1.png",
+            image:
+              "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
             category: "Running",
             isActive: true,
             rating: 4.8,
@@ -104,7 +89,8 @@ const Home = () => {
             price: 8999,
             originalPrice: 10999,
             discountPercentage: 18,
-            image: "/Images/mock_shoe_2.png",
+            image:
+              "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=900&q=80",
             category: "Lifestyle",
             isActive: true,
             rating: 4.9,
@@ -115,7 +101,8 @@ const Home = () => {
             price: 15499,
             originalPrice: 16999,
             discountPercentage: 8,
-            image: "/Images/mock_shoe_3.png",
+            image:
+              "https://images.unsplash.com/photo-1597045566677-8cf032ed6634?auto=format&fit=crop&w=900&q=80",
             category: "Streetwear",
             isActive: true,
             rating: 4.9,
@@ -126,7 +113,8 @@ const Home = () => {
             price: 9999,
             originalPrice: null,
             discountPercentage: 0,
-            image: "/Images/mock_shoe_4.png",
+            image:
+              "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=900&q=80",
             category: "Basketball",
             isActive: true,
             rating: 4.7,
@@ -137,7 +125,8 @@ const Home = () => {
             price: 16999,
             originalPrice: 18999,
             discountPercentage: 10,
-            image: "/Images/mock_shoe_5.png",
+            image:
+              "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=900&q=80",
             category: "Lifestyle",
             isActive: true,
             rating: 4.6,
@@ -148,7 +137,8 @@ const Home = () => {
             price: 15999,
             originalPrice: 17999,
             discountPercentage: 11,
-            image: "/Images/mock_shoe_6.png",
+            image:
+              "https://images.unsplash.com/photo-1543508282-6319a3e2621f?auto=format&fit=crop&w=900&q=80",
             category: "Running",
             isActive: true,
             rating: 4.7,
@@ -159,7 +149,8 @@ const Home = () => {
             price: 7999,
             originalPrice: 9999,
             discountPercentage: 20,
-            image: "/Images/mock_shoe_7.png",
+            image:
+              "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=900&q=80",
             category: "Casual",
             isActive: true,
             rating: 4.5,
@@ -170,16 +161,18 @@ const Home = () => {
             price: 4999,
             originalPrice: null,
             discountPercentage: 0,
-            image: "/Images/mock_shoe_8.png",
+            image:
+              "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=900&q=80",
             category: "Skate",
             isActive: true,
             rating: 4.8,
           },
         ];
 
-        setProducts(mockProducts);
+        setProducts(referenceProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
+        setProducts([]);
       } finally {
         // Simulate a noticeable network delay for skeleton loading reveal
         setTimeout(() => setLoading(false), 2000);
@@ -350,14 +343,6 @@ const Home = () => {
                   </div>
                 </div>
               ))}
-            </div>
-          ) : products.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="inline-block p-6 bg-gray-50 rounded-2xl">
-                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">No products available at the moment.</p>
-                <p className="text-gray-400 text-sm mt-2">Check back soon for new arrivals!</p>
-              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
